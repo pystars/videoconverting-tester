@@ -1,0 +1,5 @@
+*.pyc
+.idea
+db
+media/originals/*
+media/converted/*
