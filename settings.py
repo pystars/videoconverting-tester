@@ -1,8 +1,12 @@
 # Django settings for bumerang project.
 import djcelery
+import os
+
 djcelery.setup_loader()
 
 TEMPLATE_DEBUG = DEBUG = True
+
+PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -43,18 +47,18 @@ USE_L10N = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -70,6 +74,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    os.path.join(PROJECT_DIR, 'templates/static'),
 )
 
 # List of finder classes that know how to find static files in
@@ -105,9 +110,12 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'bumerang.urls'
+ROOT_URLCONF = 'urls'
 
-TEMPLATE_DIRS = ('/home/goodfellow/work/projects/bumerang/templates',)
+TEMPLATE_DIRS = (
+    os.path.join(PROJECT_DIR, 'templates'),
+)
+
 BROKER_BACKEND = "djkombu.transport.DatabaseTransport"
 
 INSTALLED_APPS = (
@@ -150,25 +158,3 @@ LOGGING = {
         },
     }
 }
-
-'''
-Directories
-'''
-APP_DOMAIN = "127.0.0.1"
-APP_PATH = "/"
-
-APPLICATION_DIR = '/home/goodfellow/work/projects/bumerang/'
-#MEDIA_ROOT = '/var/www/media%s' % APP_PATH
-MEDIA_ROOT = '/home/goodfellow/work/projects/bumerang/media%s' % APP_PATH
-#GENERATOR_DIR =  '%s/templates/layout/generated/' % APPLICATION_DIR
-TEMPLATE_DIRS = (
-    '%stemplates' % APPLICATION_DIR
-)
-
-PATH_VIDEOS = '%suploads/videos/' % MEDIA_ROOT
-PATH_TEMP = '%suploads/temp/' % MEDIA_ROOT
-PATH_SPLASH = '%suploads/splash/' % MEDIA_ROOT
-
-MEDIA_URL = '/media%s' % APP_PATH
-LOGIN_REDIRECT_URL = '%sadmin/' % APP_PATH
-LOGIN_URL = '%sadmin/login/' % APP_PATH
