@@ -16,7 +16,6 @@ class Options(models.Model):
         >>> list(opt.as_commandline())
         ['-acodec', 'vp8', '-ab', '150000']
     """
-    empty = ()
     OPTIONS = {}
 
     class Meta:
@@ -31,11 +30,8 @@ class Options(models.Model):
         keys = self.fields.keys()
         if not include_special:
             keys = [k for k in keys if self.OPTIONS.get(k)]
-        if not keys:
-            for item in self.empty:
-                yield item
         for key in keys:
-            yield '-' + self.OPTIONS.get(key)
+            yield self.OPTIONS.get(key)
             yield str(self.fields[key])
 
     def __unicode__(self):
@@ -43,67 +39,55 @@ class Options(models.Model):
 
 
 class AudioOptions(Options):
-    sample_rate = models.PositiveIntegerField(
+    BITRATE_CHOICES = [(x, x) for x in (64, 96, 128, 160)]
+    sample_rate = models.FloatField(
         'audio sampling frequency', **nullable)
     bitrate = models.PositiveIntegerField('audio bit rate',
-        help_text='bit/s (default = 64k)', **nullable)
-    quality = models.CharField('audio quality', max_length=10,
-        help_text='(codec-specific, VBR)', **nullable)
-    channels = models.PositiveIntegerField(
-        'number of audio channels', **nullable)
-    codec = models.CharField('audio codec', max_length=10,
-        help_text="""Use the "copy" special value to specify that the raw
-        codec data must be copied as is""", **nullable)
+        help_text='kbits/s (default like source)',
+        choices=BITRATE_CHOICES, **nullable)
 
     class Meta:
-        unique_together = (
-            ("sample_rate", "bitrate", "quality", "channels", "codec"),
-        )
+        unique_together = (("sample_rate", "bitrate"),)
 
-    empty = ['-an'] # -an = no audio
     OPTIONS = dict(
-        sample_rate = 'ar',
-        bitrate = 'ab',
-        quality = 'aq',
-        channels = 'ac',
-        codec = 'acodec'
+        sample_rate = '-R',
+        bitrate = '-B',
     )
 
 
 class VideoOptions(Options):
+
+    PRESET_CHOICES = [ (x,x) for x in
+        ('"Normal"', '"High Profile"', '"Classic"')
+    ]
+
+    RATE_CHOICES = [(x, x) for x in (5, 10, 12, 15, 23.976, 24, 25, 29.97)]
+    codec = 'x264'
+    preset = models.CharField('x264 preset', max_length=20,
+                              choices=PRESET_CHOICES)
     bitrate = models.PositiveIntegerField('video bit rate',
         help_text='(bit/s)', **nullable)
     frame_rate = models.CharField('frame rate', max_length=10,
-        help_text='(Hz value)', **nullable)
-    frames = models.PositiveIntegerField('frames',
-        help_text='number of video frames to record', **nullable)
-    size = models.CharField('frame size', max_length=10,
-        help_text='The format is wxh (160x128)', **nullable)
-    codec = models.CharField("video codec", max_length=20,
-       help_text="""Use the "copy" special value to tell that the raw codec
-       data must be copied as is""", **nullable)
+        help_text='(Hz value)', choices=RATE_CHOICES, **nullable)
+    width = models.PositiveIntegerField('width')
+    height = models.PositiveIntegerField('height', **nullable)
     quality = models.PositiveIntegerField('quality lvl',
         help_text='between 1 (excellent quality) and 31 (worst)', **nullable)
-    max_width = models.PositiveIntegerField(**nullable)
-    max_height = models.PositiveIntegerField(**nullable)
+    x264opts = models.CharField('x264 options', max_length=400, **nullable)
 
     class Meta:
         unique_together = (
-            ("frame_rate", "bitrate", "quality", "frames", "codec", "size",
-             "max_width", "max_height"),
-        )
+        ("frame_rate", "bitrate", "quality", "width", "height", "x264opts"),)
 
     OPTIONS = dict(
-        bitrate = 'b',
-        frame_rate = 'r',
-        frames = 'vframes',
-        size = 's',
-        codec = 'vcodec',
-        quality = 'qscale',
-        max_width = None,
-        max_height = None
+        preset = '-Z',
+        bitrate = '-b',
+        frame_rate = '-r',
+        width = '-w',
+        height = '-l',
+        codec = '-e',
+        quality = 'q'
     )
-    empty = ()
 
 if __name__ == '__main__':
     import doctest

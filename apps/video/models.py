@@ -47,7 +47,7 @@ class Converted(VideoFile):
     )
 
     original = models.ForeignKey(Original)
-    file = models.FileField(upload_to='converted/', editable=False, **nullable)
+    file = models.FileField(upload_to='converted/', **nullable)
     audio_options = models.ForeignKey(AudioOptions)
     video_options = models.ForeignKey(VideoOptions)
     splash_image = models.ImageField(_('Splash Image'),
@@ -60,20 +60,26 @@ class Converted(VideoFile):
             self.original.title, self.video_options, self.audio_options
         )
 
-    def file_path(self):
-        return self.file.storage.path(self.file.field.generate_filename(
-            self,
-            str(self.original.id) +
+    def get_filename(self):
+        return (str(self.original.id) +
             ''.join(self.audio_options.as_commandline()) +
             ''.join(self.video_options.as_commandline()) + '.mp4'
-        ))
+        )
+
+    def rel_file_path(self):
+        return self.file.field.generate_filename(
+            self,
+            self.get_filename()
+        )
+
+    def file_path(self):
+        return self.file.storage.path(self.rel_file_path())
 
 
 @receiver(post_save, sender=Converted)
 def convert_from_original(sender, **kwargs):
     converted = kwargs['instance']
-    print converted.file_path()
-    if os.path.exists(converted.file_path()):
+    if not converted.state is converted.PENDING:
         return
     ConvertVideoTask.delay(converted)
 

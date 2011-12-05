@@ -3,16 +3,14 @@ from celery.task import Task
 
 
 class ConvertVideoTask(Task):
-    extra_ffmpeg_args = []
 
     def get_commandline(self):
         return (
-            ['ffmpeg', '-v', '10'] +
-            self.extra_ffmpeg_args +
+            ['HandBrakeCLI', '-O'] +
             ['-i', self.original_file.filename] +
             list(self.audio_options.as_commandline()) +
             list(self.video_options.as_commandline()) +
-            [self.result_file.filename]
+            ['-o', self.result_file.filename]
         )
     
     def run(self, converted, **kwargs):
@@ -29,11 +27,12 @@ class ConvertVideoTask(Task):
 
         converted.state = converted.PROCESSING
         converted.save()
-        process = subprocess.call(self.get_commandline(), shell=False)
+        process = False# subprocess.call(self.get_commandline(), shell=False)
         if process:
             converted.state = converted.ERROR
         else:
             converted.state = converted.READY
+            converted.file = converted.rel_file_path()
             converted.locked = False
         converted.save()
         return "Ready"
