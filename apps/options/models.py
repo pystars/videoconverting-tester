@@ -88,7 +88,8 @@ class VideoOptions(Options):
         width = '-w',
         height = '-l',
         codec = '-e',
-        quality = 'q'
+        quality = '-q',
+        x264opts = '-x'
     )
 
 if __name__ == '__main__':

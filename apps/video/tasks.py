@@ -27,7 +27,7 @@ class ConvertVideoTask(Task):
 
         converted.state = converted.PROCESSING
         converted.save()
-        process = False# subprocess.call(self.get_commandline(), shell=False)
+        process = subprocess.call(self.get_commandline(), shell=False)
         if process:
             converted.state = converted.ERROR
         else:
