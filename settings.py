@@ -1,12 +1,22 @@
 # Django settings for bumerang project.
 import djcelery
 import os
+import sys
+
+CELERYD_TASK_TIME_LIMIT = 60 * 60 * 6
+CELERY_REDIRECT_STDOUTS_LEVEL = 'INFO'
+CELERYD_LOG_LEVEL = 'INFO'
+CELERYBEAT_LOG_LEVEL = 'INFO'
+CELERYMON_LOG_LEVEL = 'INFO'
+CELERYD_CONCURRENCY = 2
 
 djcelery.setup_loader()
 
 TEMPLATE_DEBUG = DEBUG = False
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
+
+sys.path.insert(0, os.path.join(PROJECT_DIR, ""))
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -130,8 +140,8 @@ INSTALLED_APPS = (
     'django_extensions',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-    'bumerang.apps.options',
-    'bumerang.apps.video',
+    'apps.options',
+    'apps.video',
     'djcelery',
     'djkombu',
 )

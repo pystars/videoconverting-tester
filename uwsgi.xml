@@ -1,13 +1,13 @@
 <uwsgi>
-    <socket>/web/run/bumerang.sock</socket>
+    <socket>62.76.179.205:8080</socket>
     <process>1</process>
     <master/>
     <uid>web</uid>
     <gid>web</gid>
-    <pidfile>/web/run/bumerang.pid</pidfile>
+    <pidfile>/web/run/videoconverting-tester.pid</pidfile>
     <env>DJANGO_SETTINGS_MODULE=settings</env>
     <module>django.core.handlers.wsgi:WSGIHandler()</module>
-    <chdir>/web/bumerang</chdir>
-    <virtualenv>/home/web/.virtualenvs/bumerang</virtualenv>
-    <daemonize>/web/log/bumerang-uwsgi.log</daemonize>
+    <chdir>/web/videoconverting-tester</chdir>
+    <virtualenv>/home/web/.virtualenvs/videoconverting-tester</virtualenv>
+    <daemonize>/web/log/videoconverting-tester.log</daemonize>
 </uwsgi>
