@@ -58,12 +58,11 @@ class AudioOptions(Options):
 class VideoOptions(Options):
 
     PRESET_CHOICES = [ (x,x) for x in
-        ('"Normal"', '"High Profile"', '"Classic"')
-    ]
+        ('Normal', 'High Profile', 'Classic')]
 
     RATE_CHOICES = [(x, x) for x in
-        ("5", "10", "12", "15", "23.976", "24", "25", "29.97")
-    ]
+        ("5", "10", "12", "15", "23.976", "24", "25", "29.97")]
+    
     codec = 'x264'
     preset = models.CharField('x264 preset', max_length=20,
                               choices=PRESET_CHOICES)

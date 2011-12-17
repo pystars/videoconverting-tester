@@ -4,7 +4,7 @@ import os
 
 djcelery.setup_loader()
 
-TEMPLATE_DEBUG = DEBUG = True
+TEMPLATE_DEBUG = DEBUG = False
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 

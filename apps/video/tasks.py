@@ -6,7 +6,7 @@ class ConvertVideoTask(Task):
 
     def get_commandline(self):
         return (
-            ['HandBrakeCLI', '-O'] +
+            ['HandBrakeCLI', '-O', '-C', '1']+
             ['-i', self.original_file.filename] +
             list(self.audio_options.as_commandline()) +
             list(self.video_options.as_commandline()) +
